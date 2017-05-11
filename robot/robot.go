@@ -13,23 +13,23 @@ type IRobot interface {
 }
 
 //robot.RobotServer包含一个IRobot接口
-type RobotServer struct {
+type RobotClient struct {
 	IRobot
 }
 
 //新建一个Robot
-func NewRobot(r IRobot) *RobotServer {
-	return &RobotServer{r}
+func NewRobot(r IRobot) *RobotClient {
+	return &RobotClient{r}
 }
 
 //robot.RobotServer服务方法
-func (r *RobotServer) Serve(w io.Writer, method, param string) {
+func (r *RobotClient) Serve(w io.Writer, method, param string) {
 	result, err := r.Call(method, param)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s call method:%s,param:%s.Failed.%s\n",
 			r.Name(), method, param, err.Error())
 	}
-	if r.Response(w, result) != nil {
-		fmt.Fprintf(os.Stderr, "%s respone Error:%s\n", r.Name(), result)
+	if err := r.Response(w, result); err != nil {
+		fmt.Fprintf(os.Stderr, "%s respone Error:%s", r.Name(), err.Error())
 	}
 }
